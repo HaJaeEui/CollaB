@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+		id="multipartResolver">
+		<property name="maxUploadSize" value="10737418240" />
+		<property name="defaultEncoding" value="utf-8" />
+	</bean>
+	
+	<bean class="java.lang.String" id="saveDirectory">
+		<constructor-arg value="/home/ubuntu/apache-tomcat-9.0.59/webapps/profilePic/" />
+	</bean>
+	
+	<bean class="java.lang.String" id="commentSaveDirectory">
+		<constructor-arg value="c://commentFile//" />
+	</bean>
+
+<!-- 	<bean class="java.lang.String" id="commentRelativeSaveDirectory"> -->
+<!-- 		<constructor-arg value="/home/ubuntu/apache-tomcat-9.0.59/webapps/commentFile/" /> -->
+<!-- 	</bean> -->
+	
+	<bean class="java.lang.String" id="commentRelativeSaveDirectory">
+		<constructor-arg value="C:\Collab\CollaB_Donggle\CollaB\src\main\webapp\resources\commentFile\" />
+	</bean>
+	<bean class="java.lang.String" id="cardSaveDirectory">
+		<constructor-arg value="C:\Collab\CollaB_Donggle\CollaB\src\main\webapp\resources\cardFile\" />
+	</bean>
+	
+<!-- 	<bean class="java.lang.String" id="cardSaveDirectory"> -->
+<!-- 		<constructor-arg value="/home/ubuntu/apache-tomcat-9.0.59/webapps/cardFile/" /> -->
+<!-- 	</bean> -->
+</beans>

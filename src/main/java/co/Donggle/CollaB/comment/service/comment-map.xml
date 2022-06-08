@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="co.Donggle.CollaB.comment.service.CommentMapper">
+	
+	<select id="commentList"
+	resultType="co.Donggle.CollaB.comment.service.CommentVO"
+	parameterType="int">
+		select A.*, B.name, B.nickname, B.prof_pic, C.file_id, C.file_name, C.pfile_name, C.file_date, badNum.badNumb, goodNum.goodNumb, groupCnt.gCnt
+        from card_comment A 
+        left outer join user_info B
+        on A.id = B.id
+        left outer join comment_file_info C
+        on A.comment_id = C.comment_id
+        left outer join (select comment_id, count(*) as badNumb
+        from comment_like_bad
+        group by comment_id) badNum
+        on badNum.comment_id = A.comment_id
+        left outer join (select comment_id, count(*) as goodNumb
+        from comment_like_good
+        group by comment_id) goodNum
+        on goodNum.comment_id = A.comment_id
+        left outer join (select comment_group as groupcnt_group, count(*) as gCnt
+        from card_comment 
+        where card_id = #{card_id}
+        group by comment_group
+        order by comment_group) groupCnt
+        on groupcnt.groupcnt_group = A.comment_group
+        where A.card_id = #{card_id}
+        and A.comment_order = 0
+        ORDER BY COMMENT_GROUP, COMMENT_ORDER
+	</select>
+	
+	<select id="recommentList" 
+	resultType="co.Donggle.CollaB.comment.service.CommentVO"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		select A.*, B.name, B.nickname, B.prof_pic, C.file_id, C.file_name, C.pfile_name, C.file_date, badNum.badNumb, goodNum.goodNumb
+        from card_comment A 
+        left outer join user_info B
+        on A.id = B.id
+        left outer join comment_file_info C
+        on A.comment_id = C.comment_id
+        left outer join (select comment_id, count(*) as badNumb
+        from comment_like_bad
+        group by comment_id) badNum
+        on badNum.comment_id = A.comment_id
+        left outer join (select comment_id, count(*) as goodNumb
+        from comment_like_good
+        group by comment_id) goodNum
+        on goodNum.comment_id = A.comment_id
+        where A.card_id = #{card_id}
+        and A.comment_group = #{comment_group}
+        and A.comment_order > 0
+        ORDER BY COMMENT_GROUP, COMMENT_ORDER
+	</select>
+	
+	<select id="commentAuthorChk"
+	resultType="co.Donggle.CollaB.comment.service.CommentVO"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		select *
+		from card_comment
+		where comment_id = #{comment_id}
+		and id = #{id}
+	</select>
+	<select id="commentLikeUserIdSelect"
+	resultType="co.Donggle.CollaB.comment.service.CommentVO"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		select * from comment_like
+		where comment_id = #{comment_id}
+	</select>
+	
+	<insert id="commentInsert" useGeneratedKeys="true" keyProperty="comment_id"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		<selectKey keyProperty="comment_id" order="BEFORE" resultType="int">
+			SELECT NVL(MAX(comment_id),0)+1 FROM card_comment
+		</selectKey>
+		
+		insert into card_comment (comment_id, comment_group, comment_content, card_id, id, comment_date)
+		values(#{comment_id},#{comment_group},#{comment_content},#{card_id},#{id},#{comment_date})
+		
+	</insert>
+	
+	<select id="commentMaxGroupSelect"
+	resultType="co.Donggle.CollaB.comment.service.CommentVO"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		SELECT NVL(MAX(comment_group),0)+1 as comment_group FROM card_comment
+		where card_id = #{card_id}
+	</select>
+	
+	<insert id="commentFileInsert"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		<selectKey keyProperty="file_id" order="BEFORE" resultType="int">
+			SELECT NVL(MAX(file_id),0)+1 FROM comment_file_info
+		</selectKey>
+		insert into comment_file_info
+		values(#{file_id},#{file_name},#{pfile_name},#{file_date},#{comment_id})
+	</insert>
+
+	<insert id="recommentInsert" useGeneratedKeys="true" keyProperty="comment_id"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		<selectKey keyProperty="comment_id" order="BEFORE" resultType="int">
+			SELECT NVL(MAX(comment_id),0)+1 FROM card_comment
+		</selectKey>
+		
+		insert into card_comment 
+		values(#{comment_id},#{comment_order},#{comment_group},#{comment_content},#{comment_class},#{card_id},#{id},#{comment_date})
+		
+	</insert>
+	
+	<select id="recommentMaxOrderSelect"
+	resultType="co.Donggle.CollaB.comment.service.CommentVO"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		select nvl(max(comment_order), 0)+1 as comment_order from card_comment
+		where card_id = #{card_id}
+		and comment_group = #{comment_group}
+	
+	</select>
+	
+	<select id="commentGoodSelect"
+	resultType="co.Donggle.CollaB.comment.service.CommentVO"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		select * from comment_like_good
+		where id = #{id}
+		and comment_id = #{comment_id}
+	</select>
+	
+	<select id="commentBadSelect"
+	resultType="co.Donggle.CollaB.comment.service.CommentVO"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		select * from comment_like_bad
+		where id = #{id}
+		and comment_id = #{comment_id}
+	</select>
+	
+	<insert id="commentGoodInsert"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		insert into comment_like_good
+		values(#{comment_id},#{id})
+	</insert>
+	
+	<delete id="commentGoodDelete"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		delete comment_like_good
+		where comment_id = #{comment_id}
+	</delete>
+	
+	<delete id="commentBadDelete" 
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		delete comment_like_bad
+		where comment_id = #{comment_id}
+	</delete>
+	
+	<insert id="commentBadInsert"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		insert into comment_like_bad
+		values(#{comment_id},#{id})
+	</insert>
+	
+	<delete id="commentDelete"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		delete card_comment
+		where comment_id = #{comment_id}
+	</delete>
+	
+	<delete id="commentFileDelete"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		delete comment_file_info
+		where comment_id = #{comment_id}
+	</delete>
+	
+	<select id="commentGroupListSelect"
+	resultType="co.Donggle.CollaB.comment.service.CommentVO"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		select * from card_comment
+		where comment_group = #{comment_group}
+	</select>
+	
+	<update id="commentUpdate"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		update card_comment
+		set comment_content = #{comment_content}
+		where comment_id = #{comment_id}
+		
+	
+	</update>
+	
+	<update id="commentFileUpdate"
+	parameterType="co.Donggle.CollaB.comment.service.CommentVO">
+		update comment_file_info
+		set
+		file_name = #{file_name},
+		pfile_name = #{pfile_name}
+		where comment_id = #{comment_id}
+		
+	</update>
+</mapper>

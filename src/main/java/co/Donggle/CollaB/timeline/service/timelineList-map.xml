@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="co.Donggle.CollaB.timeline.service.TimelineListMapper">
+	
+	<select id="timeList" resultType="co.Donggle.CollaB.timeline.service.TimelineListVO">
+		SELECT * FROM LIST
+		WHERE BOARD_ID = #{board_id}
+	</select>
+	
+	<insert id="insertList" parameterType="co.Donggle.CollaB.timeline.service.TimelineListVO">
+		<selectKey keyProperty="list_id" resultType="int" order="BEFORE">
+			SELECT MAX(LIST_ID) + 1 AS LIST_ID FROM LIST	
+		</selectKey>	
+		INSERT INTO LIST (LIST_ID, LIST_TITLE, BOARD_ID, ID)
+		VALUES (#{list_id}, #{list_title}, #{board_id}, #{id})
+	</insert>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.Donggle.CollaB.workspace.service.WorkspaceMapper">
+
+	<insert id="workspaceInsert"
+	parameterType="co.Donggle.CollaB.workspace.service.WorkspaceVO">
+		<selectKey keyProperty="workspace_id" order="BEFORE" resultType="int">
+			SELECT NVL(MAX(WORKSPACE_ID),0)+1 FROM WORKSPACE
+		</selectKey>
+		INSERT INTO WORKSPACE(WORKSPACE_ID, WORKSPACE_TITLE, ID, WORKSPACE_CREATE_DATE)
+		VALUES(#{workspace_id},#{workspace_title},#{id},sysdate)
+	</insert>
+	
+	<update id="workspaceRename"
+	parameterType="co.Donggle.CollaB.workspace.service.WorkspaceVO">
+		UPDATE WORKSPACE 
+		SET WORKSPACE_TITLE = #{workspace_title} 
+		WHERE  WORKSPACE_ID = #{workspace_id}
+	</update>
+	
+	<select id="searchWorkspace"
+	parameterType="co.Donggle.CollaB.workspace.service.WorkspaceVO"
+	resultType="co.Donggle.CollaB.workspace.service.WorkspaceVO">
+		SELECT * FROM WORKSPACE WHERE WORKSPACE_ID = #{workspace_id}
+	</select>
+	
+	<select id="selectWorkspaceMaxId"
+	resultType="int">
+		SELECT MAX(WORKSPACE_ID) FROM WORKSPACE
+	</select>
+	
+	<select id="boardListinWorkspace"
+	parameterType="co.Donggle.CollaB.workspace.service.WorkspaceVO"
+	resultType="co.Donggle.CollaB.board.service.BoardVO">
+		SELECT * FROM BOARD 
+		WHERE WORKSPACE_ID = #{workspace_id}
+	</select>
+	
+	<select id="boardIdListInWorkspace"
+	parameterType="co.Donggle.CollaB.workspace.service.WorkspaceVO"
+	resultType="co.Donggle.CollaB.board.service.BoardVO">
+		SELECT BOARD_ID FROM BOARD
+		WHERE WORKSPACE_ID = #{workspace_id}
+	</select>
+	
+	<delete id="workspaceDelete"
+	parameterType="co.Donggle.CollaB.workspace.service.WorkspaceVO">
+		DELETE WORKSPACE
+		WHERE WORKSPACE_ID = #{workspace_id}
+	</delete>
+	
+	<select id="workspaceListSearch" 
+	parameterType="co.Donggle.CollaB.workspace.service.WorkspaceVO"
+	resultType="co.Donggle.CollaB.workspace.service.WorkspaceVO">
+		SELECT W.* 
+		FROM WORKSPACE W, WORKSPACE_JOIN J
+		WHERE  W.WORKSPACE_ID = J.WORKSPACE_ID
+		AND W.ID = #{id}
+		AND W.WORKSPACE_TITLE LIKE '%'||#{workspace_title}||'%'
+	</select>
+</mapper>
