@@ -1,7 +1,6 @@
 <h1><img src="https://user-images.githubusercontent.com/90663221/172540830-5c8084e5-e71b-4f51-ab75-4a2d04fbf519.png"></h1>
 <h2>1.Intro</h2>
 
-//+ 팀 명 : 동그라미 
 + 프로젝트 명 : CollaB(그룹웨어)   
 + 팀원 
   +  정도영 : DB설계 및 구축, 서버 구축, 파일 히스토리
